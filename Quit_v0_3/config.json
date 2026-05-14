@@ -1,0 +1,112 @@
+{
+  "_comment": "QUIT Agent config. All fields are optional \u2014 defaults apply when omitted. Keys starting with '_' are documentation only.",
+  "project": {
+    "topic": "your research topic here",
+    "objective": "Describe your research objective here.",
+    "domain": "your research domain",
+    "constraints": [],
+    "project_id": "my-project"
+  },
+  "runtime": {
+    "data_dir": "runs",
+    "env_file": ".env",
+    "stop_after": "WRITE",
+    "max_steps": 30
+  },
+  "llm": {
+    "_comment": "provider choices: anthropic, openai, deepseek, qwen, moonshot, glm, transformers, lmstudio, local-vllm",
+    "provider": "openai",
+    "model": "gpt-4o",
+    "base_url": "https://api.openai.com/v1",
+    "api_key": "YOUR_API_KEY_HERE",
+    "api_key_env": "OPENAI_API_KEY",
+    "temperature": 0.7
+  },
+  "agents": {
+    "_comment": "Per-agent generation limits. CLI --stop-after can stop after any WorkflowState.",
+    "planner": {
+      "max_tokens": 4096,
+      "timeout_seconds": 360
+    },
+    "research": {
+      "max_tokens": 4096,
+      "timeout_seconds": 360
+    },
+    "reviewer": {
+      "max_tokens": 2048,
+      "timeout_seconds": 360
+    },
+    "builder": {
+      "max_tokens": 32768,
+      "timeout_seconds": 900
+    }
+  },
+  "search_budget": {
+    "_comment": "Controls how many papers the planner asks the retrieval pipeline to screen and select. Injected into the planner prompt so the LLM writes consistent values into ResearchBrief.json.",
+    "max_queries": 4,
+    "max_papers_screened": 60,
+    "max_papers_selected": 15,
+    "max_repo_checked": 5,
+    "stop_if_no_new_signal_rounds": 3
+  },
+  "build_budget": {
+    "_comment": "Controls code/experiment/review iteration caps. Injected into the planner prompt.",
+    "max_code_iterations": 5,
+    "max_experiments": 5,
+    "max_review_revisions": 2
+  },
+  "retrieval": {
+    "_comment": "Sources: local, arxiv, openreview. local_database_path is the user-managed PDF folder. External retrieved PDFs are saved under runs/<run_id>/<pdf_dir>/. Repo links are saved as RepoCards; relevant repos are cloned later after IDEA_EVAL passes.",
+    "sources": [
+      "local",
+      "arxiv",
+      "openreview"
+    ],
+    "local_database_path": "paper_database/local_papers",
+    "per_source_results": 15,
+    "timeout_seconds": 200,
+    "use_llm_query_planning": false,
+    "download_pdfs": true,
+    "max_downloads": 15,
+    "min_downloads": 5,
+    "relevance_selection_ratio": 0.7,
+    "pdf_dir": "paper_retrieve"
+  },
+  "read": {
+    "_comment": "mode choices: local_text uses local PDF text extraction before LLM evidence extraction; direct_pdf tries a file-input capable API model first and falls back to local_text when unsupported.",
+    "mode": "direct_pdf",
+    "max_direct_pdf_mb": 10.0,
+    "read_workers": 4
+  },
+  "run_budget": {
+    "_comment": "Epoch bounds for ALL runs (real and smoke fallback). LLM chooses within [min, max]; values outside are clamped automatically. train_epochs/eval_epochs are full dataset passes, not gradient steps.",
+    "min_train_epochs": 30,
+    "max_train_epochs": 100,
+    "min_eval_epochs": 30,
+    "max_eval_epochs": 100,
+    "experiment_timeout_seconds": 3600
+  },
+  "dataset": {
+    "_comment": "Dataset acquisition settings. The system tries to download a real dataset max_download_attempts times before falling back to synthetic data (smoke run).",
+    "max_download_attempts": 3
+  },
+  "write": {
+    "_comment": "Compiled main PDFs with fewer than expected_main_pages are direct WRITE failures. latex_timeout_seconds controls each LaTeX command invocation.",
+    "expected_main_pages": 8,
+    "latex_timeout_seconds": 900
+  },
+  "local_vllm": {
+    "_comment": "Only used when llm.provider is local-vllm",
+    "model_path": "../models/Mistral-Small-3.1-24B-Instruct-2503",
+    "served_model_name": "Mistral-24B",
+    "host": "127.0.0.1",
+    "port": 8000,
+    "gpu_memory_utilization": null,
+    "gpu_memory_safety_margin": 0.2,
+    "tensor_parallel_size": 2,
+    "startup_timeout_seconds": 500,
+    "keep_alive": false,
+    "stream": null,
+    "extra_body": {}
+  }
+}

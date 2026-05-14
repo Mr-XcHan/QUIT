@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QUIT Agent</title>
+  <link rel="icon" type="image/png" href="QUIT_logo.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-title">
+      <div class="header-logo">
+        <img src="QUIT_logo.png" alt="QUIT" class="header-logo-img" />
+      </div>
+      <span>QUIT Agent</span>
+      <span class="header-badge">v0.3</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" id="btn-load-runs">📂 Runs</button>
+      <button class="btn btn-ghost" id="btn-reset-config">↺ Reset</button>
+    </div>
+  </header>
+
+  <!-- Step Flow Bar -->
+  <section class="step-section">
+    <div class="step-bar-label">
+      <span class="step-bar-label-text">Pipeline</span>
+      <span class="step-hint">Click = stop after &nbsp;·&nbsp; Ctrl+click = start at</span>
+    </div>
+    <div class="step-bar" id="step-bar">
+      <!-- rendered by JS -->
+    </div>
+    <div class="step-range-selectors">
+      <label>
+        Start at
+        <select id="sel-start-at" class="sel-start"></select>
+      </label>
+      <span class="range-arrow">→</span>
+      <label>
+        Stop after
+        <select id="sel-stop-after" class="sel-stop"></select>
+      </label>
+    </div>
+  </section>
+
+  <!-- Main content -->
+  <main class="main">
+    <!-- Left: Config Form -->
+    <aside class="config-panel">
+      <div class="panel-header">Configuration</div>
+
+      <!-- Project -->
+      <section class="config-section">
+        <div class="section-title">Project</div>
+        <div class="field">
+          <label for="project-id">Project ID</label>
+          <input type="text" id="project-id" placeholder="Offline-RL" />
+        </div>
+        <div class="field">
+          <label for="project-topic">Topic</label>
+          <input type="text" id="project-topic" placeholder="Research topic..." />
+        </div>
+        <div class="field">
+          <label for="project-domain">Domain</label>
+          <input type="text" id="project-domain" placeholder="Offline RL, Flow Matching..." />
+        </div>
+        <div class="field">
+          <label for="project-objective">Objective</label>
+          <textarea id="project-objective" rows="3" placeholder="Research objective..."></textarea>
+        </div>
+      </section>
+
+      <!-- LLM -->
+      <section class="config-section">
+        <div class="section-title">LLM Provider</div>
+        <div class="field">
+          <label>Provider</label>
+          <div class="provider-grid" id="provider-grid">
+            <button class="provider-btn" data-provider="anthropic">Anthropic</button>
+            <button class="provider-btn" data-provider="openai">OpenAI</button>
+            <button class="provider-btn" data-provider="deepseek">DeepSeek</button>
+            <button class="provider-btn" data-provider="qwen">Qwen</button>
+            <button class="provider-btn" data-provider="moonshot">Moonshot</button>
+            <button class="provider-btn" data-provider="glm">GLM</button>
+            <button class="provider-btn" data-provider="lmstudio">LMStudio</button>
+            <button class="provider-btn" data-provider="local-vllm">vLLM</button>
+          </div>
+        </div>
+        <!-- standard provider fields -->
+        <div id="llm-standard-fields">
+          <div class="field">
+            <label for="llm-model">Model</label>
+            <input type="text" id="llm-model" placeholder="gpt-4o, claude-sonnet-4-6..." />
+          </div>
+          <div class="field">
+            <label for="llm-base-url">Base URL</label>
+            <input type="text" id="llm-base-url" placeholder="https://api.openai.com/v1" />
+          </div>
+          <div class="field">
+            <label for="llm-api-key">API Key</label>
+            <div class="input-with-toggle">
+              <input type="password" id="llm-api-key" placeholder="sk-..." autocomplete="off" />
+              <button class="btn-icon" id="btn-toggle-key" title="Show/hide">👁</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="llm-temperature">
+              Temperature
+              <span class="value-badge" id="temp-badge">0.7</span>
+            </label>
+            <input type="range" id="llm-temperature" min="0" max="2" step="0.05" value="0.7" />
+          </div>
+        </div>
+
+        <!-- vLLM-specific fields -->
+        <div id="llm-vllm-fields" style="display:none">
+          <div class="field">
+            <label for="vllm-model-path">Model Path</label>
+            <div class="input-with-toggle">
+              <input type="text" id="vllm-model-path" placeholder="../models/Mistral-Small-3.1-24B-Instruct-2503" />
+              <button class="btn-icon" id="btn-browse-model" title="Browse directories">📁</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="vllm-served-name">Served Model Name</label>
+            <input type="text" id="vllm-served-name" placeholder="Mistral-24B" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="vllm-host">Host</label>
+              <input type="text" id="vllm-host" value="127.0.0.1" />
+            </div>
+            <div class="field">
+              <label for="vllm-port">Port</label>
+              <input type="number" id="vllm-port" value="8000" min="1" max="65535" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="vllm-tensor-parallel">Tensor Parallel</label>
+              <input type="number" id="vllm-tensor-parallel" value="2" min="1" />
+            </div>
+            <div class="field">
+              <label for="vllm-gpu-margin">GPU Safety Margin</label>
+              <input type="number" id="vllm-gpu-margin" value="0.20" min="0" max="1" step="0.05" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="vllm-startup-timeout">Startup Timeout (s)</label>
+              <input type="number" id="vllm-startup-timeout" value="500" min="60" />
+            </div>
+            <div class="field">
+              <label for="vllm-gpu-util">GPU Mem Utilization</label>
+              <input type="number" id="vllm-gpu-util" placeholder="auto" min="0.1" max="1" step="0.05" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="checkbox-label">
+              <input type="checkbox" id="vllm-keep-alive" /> Keep server alive after run
+            </label>
+          </div>
+          <div class="field">
+            <label for="llm-temperature-vllm">
+              Temperature
+              <span class="value-badge" id="temp-badge-vllm">0.7</span>
+            </label>
+            <input type="range" id="llm-temperature-vllm" min="0" max="2" step="0.05" value="0.7" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Runtime -->
+      <section class="config-section">
+        <div class="section-title">Runtime</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="runtime-max-steps">Max Steps</label>
+            <input type="number" id="runtime-max-steps" min="1" max="200" value="30" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Search Budget (collapsible) -->
+      <section class="config-section collapsible" id="sec-search">
+        <div class="section-title toggle-title" data-target="search-body">
+          <span>Search Budget</span><span class="toggle-icon">▶</span>
+        </div>
+        <div class="collapsible-body" id="search-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="sb-max-queries">Max Queries</label>
+              <input type="number" id="sb-max-queries" min="1" value="4" />
+            </div>
+            <div class="field">
+              <label for="sb-max-screened">Max Screened</label>
+              <input type="number" id="sb-max-screened" min="1" value="60" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="sb-max-selected">Max Selected</label>
+              <input type="number" id="sb-max-selected" min="1" value="15" />
+            </div>
+            <div class="field">
+              <label for="sb-max-repos">Max Repos</label>
+              <input type="number" id="sb-max-repos" min="0" value="5" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Run Budget (collapsible) -->
+      <section class="config-section collapsible" id="sec-run-budget">
+        <div class="section-title toggle-title" data-target="run-budget-body">
+          <span>Run Budget</span><span class="toggle-icon">▶</span>
+        </div>
+        <div class="collapsible-body" id="run-budget-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="rb-min-train">Min Train Epochs</label>
+              <input type="number" id="rb-min-train" min="1" value="30" />
+            </div>
+            <div class="field">
+              <label for="rb-max-train">Max Train Epochs</label>
+              <input type="number" id="rb-max-train" min="1" value="100" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="rb-min-eval">Min Eval Epochs</label>
+              <input type="number" id="rb-min-eval" min="1" value="30" />
+            </div>
+            <div class="field">
+              <label for="rb-max-eval">Max Eval Epochs</label>
+              <input type="number" id="rb-max-eval" min="1" value="100" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Retrieval (collapsible) -->
+      <section class="config-section collapsible" id="sec-retrieval">
+        <div class="section-title toggle-title" data-target="retrieval-body">
+          <span>Retrieval</span><span class="toggle-icon">▶</span>
+        </div>
+        <div class="collapsible-body" id="retrieval-body">
+          <div class="field">
+            <label>Sources</label>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="sources" value="local" /> Local
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="sources" value="arxiv" checked /> arXiv
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="sources" value="openreview" checked /> OpenReview
+              </label>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="ret-per-source">Per Source</label>
+              <input type="number" id="ret-per-source" min="1" value="15" />
+            </div>
+            <div class="field">
+              <label for="ret-max-dl">Max Downloads</label>
+              <input type="number" id="ret-max-dl" min="0" value="15" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Read Mode</label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="read-mode" value="direct_pdf" checked /> direct_pdf
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="read-mode" value="local_text" /> local_text
+              </label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="checkbox-label">
+              <input type="checkbox" id="ret-download-pdfs" checked /> Download PDFs
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Agents Budget (collapsible) -->
+      <section class="config-section collapsible" id="sec-agents">
+        <div class="section-title toggle-title" data-target="agents-body">
+          <span>Agent Tokens</span><span class="toggle-icon">▶</span>
+        </div>
+        <div class="collapsible-body" id="agents-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="ag-planner">Planner</label>
+              <input type="number" id="ag-planner" min="512" step="512" value="4096" />
+            </div>
+            <div class="field">
+              <label for="ag-research">Research</label>
+              <input type="number" id="ag-research" min="512" step="512" value="4096" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="ag-reviewer">Reviewer</label>
+              <input type="number" id="ag-reviewer" min="512" step="512" value="2048" />
+            </div>
+            <div class="field">
+              <label for="ag-builder">Builder</label>
+              <input type="number" id="ag-builder" min="512" step="512" value="32768" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- Right: Run Panel -->
+    <section class="run-panel">
+      <div class="run-controls">
+        <div class="run-id-row">
+          <label for="run-id-input">Run ID <span class="hint">(leave blank to auto-generate)</span></label>
+          <div class="run-id-input-wrap">
+            <input type="text" id="run-id-input" placeholder="auto" />
+            <button class="btn btn-ghost btn-sm" id="btn-pick-run" title="Pick existing run">📂</button>
+          </div>
+        </div>
+        <div class="run-buttons">
+          <button class="btn btn-primary" id="btn-run">▶ Start Run</button>
+          <button class="btn btn-danger" id="btn-cancel" disabled>■ Cancel</button>
+        </div>
+        <div class="run-status" id="run-status"></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="run-tabs">
+        <button class="run-tab active" data-tab="log">
+          <span class="log-indicator" id="log-indicator"></span> Output Log
+        </button>
+        <button class="run-tab" data-tab="results">📁 Results</button>
+      </div>
+
+      <!-- Tab: Log -->
+      <div class="tab-pane active" id="tab-log">
+        <div class="log-header">
+          <div class="log-header-left">
+            <span>Output</span>
+          </div>
+          <div class="log-actions">
+            <button class="btn btn-ghost btn-sm" id="btn-clear-log">Clear</button>
+            <button class="btn btn-ghost btn-sm" id="btn-autoscroll">↓ Auto</button>
+          </div>
+        </div>
+        <div class="log-pane" id="log-pane"></div>
+      </div>
+
+      <!-- Tab: Results -->
+      <div class="tab-pane" id="tab-results">
+        <div class="results-layout">
+          <!-- File Tree -->
+          <div class="file-tree-panel">
+            <div class="file-tree-header">
+              <span id="results-run-label">No run selected</span>
+              <button class="btn-icon" id="btn-results-pick" title="Load a run">📂</button>
+            </div>
+            <div class="file-tree-body" id="file-tree-body">
+              <div class="file-tree-empty">Select a run to view results.</div>
+            </div>
+          </div>
+          <!-- Preview -->
+          <div class="preview-panel" id="preview-panel">
+            <div class="preview-placeholder">
+              <div class="preview-placeholder-icon">📄</div>
+              <div>Click a file to preview</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Runs modal -->
+  <div class="modal-overlay" id="runs-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <span>Existing Runs</span>
+        <button class="btn-icon" id="btn-close-modal">✕</button>
+      </div>
+      <div class="modal-body" id="runs-list"></div>
+    </div>
+  </div>
+
+  <!-- Directory browser modal -->
+  <div class="modal-overlay" id="dir-modal" hidden>
+    <div class="modal">
+      <div class="modal-header">
+        <span>Select Model Directory</span>
+        <button class="btn-icon" id="btn-close-dir-modal">✕</button>
+      </div>
+      <div class="dir-modal-path" id="dir-current-path"></div>
+      <div class="modal-body" id="dir-list"></div>
+      <div class="dir-modal-footer">
+        <button class="btn btn-ghost btn-sm" id="btn-dir-up">↑ Up</button>
+        <button class="btn btn-primary btn-sm" id="btn-dir-select">✓ Select This Folder</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

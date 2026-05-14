@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+*.egg
+
+# Environment & secrets
+.env
+*.env
+
+# Run data
+Quit_v0_3/runs/
+Quit_v0_3/run_full.log
+
+# Local paper database (add your own PDFs)
+Quit_v0_3/paper_database/local_papers/*.pdf
+
+# Build artifacts
+Quit_v0_3/paper_gene/
+*.aux *.log *.out *.fls *.fdb_latexmk *.synctex.gz
+
+# Misc
+.pytest_cache/
+.DS_Store

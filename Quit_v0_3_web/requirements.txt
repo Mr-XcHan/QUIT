@@ -1,0 +1,7 @@
+# QUIT Agent Web UI dependencies
+# Install via: pip install -r requirements.txt
+# Or install from project root: pip install -e "../Quit_v0_3[web]"
+
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9

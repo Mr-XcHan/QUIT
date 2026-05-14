@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quit-agent"
+version = "0.3.0"
+description = "Artifact-driven local-first research agent."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2",
+    "pypdf>=4",
+]
+
+[project.optional-dependencies]
+# Local LLM inference via HuggingFace Transformers or vLLM
+local = [
+    "torch>=2.0",
+    "transformers>=4.40",
+]
+# Web UI server
+web = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+    "python-multipart>=0.0.9",
+]
+# Full install: agent + web UI (local LLM still optional due to torch size)
+full = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+    "python-multipart>=0.0.9",
+]
+dev = [
+    "pytest>=7",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+quit-agent = "quit_agent.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
