@@ -49,7 +49,7 @@ All coordination happens through named artifact files on disk — no agent share
 ## 🔄 Workflow
 
 <p align="center">
-  <img src="Figure/workflow.png" alt="QUIT Workflow" width="480"/>
+  <img src="Figure/workflow.png" alt="QUIT Workflow" width="780"/>
 </p>
 
 ---
@@ -172,7 +172,7 @@ Papers produced end-to-end by QUIT Agent across different research domains:
   <tr>
     <td align="center" valign="top" width="33%" style="padding:12px">
       <a href="Demos/offline_rl_rectified_flow.pdf">
-        <img src="Demos/offline_rl_rectified_flow_thumb.png" width="100"/>
+        <img src="Demos/offline_rl_rectified_flow_thumb.png" width="150"/>
       </a>
       <br/><br/>
       <b>Offline RL</b><br/>
@@ -180,7 +180,7 @@ Papers produced end-to-end by QUIT Agent across different research domains:
     </td>
     <td align="center" valign="top" width="33%" style="padding:12px">
       <a href="Demos/robot_v2g_dispatch.pdf">
-        <img src="Demos/robot_v2g_dispatch_thumb.png" width="100"/>
+        <img src="Demos/robot_v2g_dispatch_thumb.png" width="150"/>
       </a>
       <br/><br/>
       <b>Robot</b><br/>
@@ -188,7 +188,7 @@ Papers produced end-to-end by QUIT Agent across different research domains:
     </td>
     <td align="center" valign="top" width="33%" style="padding:12px">
       <a href="Demos/3d_pattern_synthesis.pdf">
-        <img src="Demos/3d_pattern_synthesis_thumb.png" width="100"/>
+        <img src="Demos/3d_pattern_synthesis_thumb.png" width="150"/>
       </a>
       <br/><br/>
       <b>3D Generation</b><br/>
