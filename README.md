@@ -81,11 +81,11 @@ The main config file is `Quit_v0_3/config.json`. **Default parameters are ready 
 ```json
 {
   "project": {
-    "topic": "flow matching for offline reinforcement learning"
+    "topic": "Flow Matching for Offline Reinforcement Learning"
   },
   "llm": {
     "provider": "openai",
-    "model": "gpt-4o",
+    "model": "gpt-5.5",
     "api_key_env": "OPENAI_API_KEY"
   }
 }
