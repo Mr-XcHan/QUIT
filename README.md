@@ -59,8 +59,8 @@ All coordination happens through named artifact files on disk — no agent share
 **Requirements:** Python 3.11+, Git, LaTeX (`texlive` + `latexmk`)
 
 ```bash
-git clone <repo-url>
-cd Quit_agent
+git clone https://github.com/Mr-XcHan/QUIT.git
+cd QUIT
 bash setup.sh
 ```
 
