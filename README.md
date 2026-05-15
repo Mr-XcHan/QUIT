@@ -201,7 +201,7 @@ Papers produced end-to-end by QUIT Agent across different research domains:
 
 ---
 
-**We're looking for testers!** 🚀 Try the pipeline with your own research idea and see how far it gets.
+**We're looking for testers!** 🚀 Try the pipeline with your own research topic and see how far it gets.
 Full auto-run results are welcome, but we're especially excited to feature **human-in-the-loop works** — papers where researchers stepped in to guide the agent, edit intermediate artifacts, or steer the direction. Those tend to be the most interesting results.
 
 If you'd like your output showcased here, feel free to open an issue or pull request. 🙌
