@@ -76,6 +76,37 @@ In the **LLM PROVIDER** section of the left panel:
 
 > 🔒 To avoid re-entering your API key each time, copy `.env.example` to `Quit_v0_3/.env` and fill in your key. The agent loads this file automatically on startup.
 
+### 🆓 Using a Local Model via vLLM (Completely Free)
+
+If you have a GPU and a local model (e.g. Qwen, LLaMA, Mistral), you can run the entire QUIT pipeline **at zero API cost** using [vLLM](https://github.com/vllm-project/vllm) as a local OpenAI-compatible server.
+
+**Step 1 — Install and start vLLM:**
+
+```bash
+pip install vllm
+
+python -m vllm.entrypoints.openai.api_server \
+  --model ../models/Mistral-Small-3.1-24B-Instruct-2503 \
+  --served-model-name Mistral-24B \
+  --tensor-parallel-size 2 \
+  --port 8000
+```
+
+Adjust `--tensor-parallel-size` to match the number of GPUs you have. Single-GPU users can omit it or set it to `1`.
+
+**Step 2 — Configure QUIT to use it:**
+
+In the Web UI **LLM PROVIDER** section:
+
+| Field | Value |
+|---|---|
+| Provider | `vLLM` |
+| Model | `Mistral-24B` (must match `--served-model-name`) |
+| Base URL | `http://localhost:8000/v1` |
+| API Key | any non-empty string (e.g. `none`) |
+
+> 💡 vLLM exposes an OpenAI-compatible API, so no code changes are needed — QUIT talks to it exactly like any cloud provider, just without the bill.
+
 ---
 
 ## 5. Step 3 — Choose Pipeline Range
