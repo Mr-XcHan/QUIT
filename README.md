@@ -208,6 +208,14 @@ If you'd like your output showcased here, feel free to open an issue or pull req
 
 ---
 
+## 📬 Contact
+
+**Xinchen** — isxinchen.han@gmail.com
+
+Feel free to reach out with questions, feedback, or collaboration ideas.
+
+---
+
 ## 📜 License
 
 Apache 2.0 — free to use and build upon, including commercially, with attribution and notice of modifications required. See [LICENSE](LICENSE) for details.
