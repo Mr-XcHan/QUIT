@@ -4,7 +4,8 @@
 
 <p align="center">
   <strong style="font-size:1.6em;">QUIT: A Human-in-the-Loop Platform for AI Research Automation</strong><br/>
-  <strong><em>Query &nbsp;·&nbsp; Understand &nbsp;·&nbsp; Implement &nbsp;·&nbsp; Tell</em></strong>
+  <strong><em>Query &nbsp;·&nbsp; Understand &nbsp;·&nbsp; Implement &nbsp;·&nbsp; Tell</em></strong><br/>
+  <sub>✦ &nbsp; Quit the Old Way of Doing Research &nbsp; ✦</sub>
 </p>
 
 <p align="center">
