@@ -483,43 +483,56 @@ async function cancelRun() {
 }
 
 function streamLogs(jobId) {
-  const es = new EventSource(`/api/stream/${jobId}`);
-  es.addEventListener('message', e => {
-    const data = e.data;
-    if (data.startsWith('[DONE:')) {
-      const [, status] = data.match(/\[DONE:(\w+):/) || [];
-      const cls = status === 'done' ? 'done' : 'error';
-      appendLog(`[${status?.toUpperCase() || 'FINISHED'}] Run complete.`, cls);
-      setRunStatus(status === 'done' ? 'success' : 'error',
-        status === 'done' ? '✓ Run completed.' : '✗ Run ended with errors.');
-      setRunning(false);
-      state.currentStep = null;
-      updateStepHighlights();
-      es.close();
-      // auto-load results
-      if (state.completedRunId) {
-        loadResultsForRun(state.completedRunId);
-        state.completedRunId = null;
+  let retries = 0;
+  const MAX_RETRIES = 5;
+
+  function connect() {
+    const es = new EventSource(`/api/stream/${jobId}`);
+
+    es.addEventListener('message', e => {
+      retries = 0; // reset on successful message
+      const data = e.data;
+      if (data.startsWith('[DONE:')) {
+        const [, status] = data.match(/\[DONE:(\w+):/) || [];
+        const cls = status === 'done' ? 'done' : 'error';
+        appendLog(`[${status?.toUpperCase() || 'FINISHED'}] Run complete.`, cls);
+        setRunStatus(status === 'done' ? 'success' : 'error',
+          status === 'done' ? '✓ Run completed.' : '✗ Run ended with errors.');
+        setRunning(false);
+        state.currentStep = null;
+        updateStepHighlights();
+        es.close();
+        if (state.completedRunId) {
+          loadResultsForRun(state.completedRunId);
+          state.completedRunId = null;
+        }
+        return;
       }
-      return;
-    }
-    const line = JSON.parse(data);
-    const cls  = classifyLine(line);
-    appendLog(line, cls);
+      const line = JSON.parse(data);
+      const cls  = classifyLine(line);
+      appendLog(line, cls);
 
-    // Track current step
-    const m = line.match(/\[PIPELINE\] step \d+ START (\w+)/);
-    if (m) { state.currentStep = m[1]; updateStepHighlights(); }
+      const m = line.match(/\[PIPELINE\] step \d+ START (\w+)/);
+      if (m) { state.currentStep = m[1]; updateStepHighlights(); }
 
-    // Capture run_id from output line: "run_id=Offline-RL - 20260510123456"
-    const rm = line.match(/^run_id=(.+)$/);
-    if (rm) state.completedRunId = rm[1].trim();
-  });
-  es.onerror = () => {
-    appendLog('[ERROR] SSE connection lost.', 'error');
-    setRunning(false);
-    es.close();
-  };
+      const rm = line.match(/^run_id=(.+)$/);
+      if (rm) state.completedRunId = rm[1].trim();
+    });
+
+    es.onerror = () => {
+      es.close();
+      retries++;
+      if (retries <= MAX_RETRIES) {
+        appendLog(`[WARN] SSE connection lost, reconnecting… (${retries}/${MAX_RETRIES})`, 'warn');
+        setTimeout(connect, 2000);
+      } else {
+        appendLog('[ERROR] SSE connection lost after max retries. Backend may still be running.', 'error');
+        setRunning(false);
+      }
+    };
+  }
+
+  connect();
 }
 
 function classifyLine(line) {
