@@ -18,6 +18,7 @@
 QUIT is a human-in-the-loop research assistant — not a black box, but a transparent pipeline where researchers remain in full control at every step.
 Its **artifact-driven design** eliminates long-context dependency and avoids redundant token consumption.
 
+QUIT also fully supports **end-to-end mode** — just set a topic and let the pipeline run to completion without any intervention.
 End-to-end cost with DeepSeek-V4-Pro: roughly **¥10 ($1.5) per manuscript**.
 
 | Stage | What it does |
