@@ -4,8 +4,8 @@
 
 <p align="center">
   <strong style="font-size:1.6em;">QUIT：面向 AI 科研自动化的人机协同平台</strong><br/>
-  <strong><em>Query（检索）&nbsp;·&nbsp; Understand（理解）&nbsp;·&nbsp; Implement（实现）&nbsp;·&nbsp; Tell（撰写）</em></strong><br/>
-  <sub>✦ &nbsp; 告别古法科研方式 &nbsp; ✦</sub>
+  <strong><em>Query &nbsp;·&nbsp; Understand &nbsp;·&nbsp; Implement &nbsp;·&nbsp; Tell </em></strong><br/>
+  <sub>✦ &nbsp; 告别古法科研 &nbsp; ✦</sub>
 </p>
 
 <p align="center">
