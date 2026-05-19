@@ -76,7 +76,7 @@ python server.py --port 7862
 2. 🤖 **Model** — 填写模型名称（如 `gpt-5.5`、`deepseek-v4-pro`）。
 3. 🌐 **Base URL** — 主流 provider 已预填；自定义端点才需要修改。
 4. 🔑 **API Key** — 粘贴你的 API Key。仅存储在浏览器 session 中，不会被记录到日志。
-5. 🌡️ **Temperature** — 控制创意程度（默认 `0.70`）。越低越聚焦，越高越发散。
+5. 🌡️ **Temperature** — 控制温度（默认 `0.70`）。越低越聚焦，越高越发散。
 
 > 🔒 为避免每次重新填写 API Key，可将 `.env.example` 复制为 `Quit_v0_3/.env` 并填入你的 Key，agent 启动时会自动加载。
 
