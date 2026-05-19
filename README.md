@@ -13,6 +13,12 @@
   <img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-orange"/>
 </p>
 
+<p align="center">
+  <a href="README.md"><img alt="English" src="https://img.shields.io/badge/English-current-blue"/></a>
+  &nbsp;
+  <a href="README_CN.md"><img alt="中文" src="https://img.shields.io/badge/中文-点击切换-blue"/></a>
+</p>
+
 ---
 
 QUIT is a human-in-the-loop research assistant — not a black box, but a transparent pipeline where researchers remain in full control at every step.
