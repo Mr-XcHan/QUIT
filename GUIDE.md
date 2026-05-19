@@ -7,6 +7,10 @@
   <em>A step-by-step walkthrough for running your first research pipeline</em>
 </p>
 
+<p align="center">
+  <a href="GUIDE.zh.md">中文</a> | English
+</p>
+
 ---
 
 ## 📋 Table of Contents

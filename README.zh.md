@@ -136,7 +136,7 @@ python server.py --port 7862
 
 然后在浏览器中打开 **http://localhost:7862**。
 
-**▶️ 快速开始：** 填写研究主题，点击 **Start Run**，Agent 将自动逐状态运行，直至 **Stop after** 指定的状态。详细的分步操作指南请参见 [GUIDE.md](GUIDE.md)。
+**▶️ 快速开始：** 填写研究主题，点击 **Start Run**，Agent 将自动逐状态运行，直至 **Stop after** 指定的状态。详细的分步操作指南请参见 [GUIDE.zh.md](GUIDE.zh.md)。
 
 **🙋 人机协同干预：** 由于所有输出均为文件，你可以随时：
 
