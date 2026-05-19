@@ -182,7 +182,7 @@ QUIT Agent 在不同研究领域端到端生成的论文：
         <img src="Demos/offline_rl_rectified_flow_thumb.png" width="150"/>
       </a>
       <br/><br/>
-      <b>离线强化学习</b><br/>
+      <b>Offline RL</b><br/>
       <sub><em>Trust-Region Rectified Flow Offline Actor for Low-Latency Generative Policy Learning</em></sub>
     </td>
     <td align="center" valign="top" width="33%" style="padding:12px">
@@ -190,7 +190,7 @@ QUIT Agent 在不同研究领域端到端生成的论文：
         <img src="Demos/robot_v2g_dispatch_thumb.png" width="150"/>
       </a>
       <br/><br/>
-      <b>机器人</b><br/>
+      <b>Robot</b><br/>
       <sub><em>Online Pricing and Energy-Aware Dispatch for Mobile Charging Robot-Mediated V2G Services</em></sub>
     </td>
     <td align="center" valign="top" width="33%" style="padding:12px">
@@ -198,7 +198,7 @@ QUIT Agent 在不同研究领域端到端生成的论文：
         <img src="Demos/3d_pattern_synthesis_thumb.png" width="150"/>
       </a>
       <br/><br/>
-      <b>3D 生成</b><br/>
+      <b>3D Generation</b><br/>
       <sub><em>Decoupled Macro–Micro Generation for Editable Large-Scale 3D Surface Patterns</em></sub>
     </td>
   </tr>
