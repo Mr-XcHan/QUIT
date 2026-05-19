@@ -14,9 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md"><img alt="English" src="https://img.shields.io/badge/English-current-blue"/></a>
-  &nbsp;
-  <a href="README_CN.md"><img alt="中文" src="https://img.shields.io/badge/中文-点击切换-blue"/></a>
+  <a href="README.zh.md">中文</a> | English
 </p>
 
 ---
