@@ -1,21 +1,21 @@
 'use strict';
 
 // ── Workflow Steps ────────────────────────────────────────────────────────────
-const STEPS = [
-  { id: 'PLAN',           label: 'Plan' },
-  { id: 'VALIDATE_BRIEF', label: 'Validate' },
-  { id: 'RETRIEVE',       label: 'Retrieve' },
-  { id: 'READ',           label: 'Read' },
-  { id: 'IDEATE',         label: 'Ideate' },
-  { id: 'IDEA_EVAL',      label: 'Idea Eval' },
-  { id: 'BUILD_SPEC',     label: 'Build Spec' },
-  { id: 'CODE',           label: 'Code' },
-  { id: 'CODE_EVAL',      label: 'Code Eval' },
-  { id: 'WRITE',          label: 'Write' },
-  { id: 'WRITE_EVAL',     label: 'Write Eval' },
-  { id: 'EXTRACT',        label: 'Extract' },
+const STEP_DEFS = [
+  'PLAN',
+  'VALIDATE_BRIEF',
+  'RETRIEVE',
+  'READ',
+  'IDEATE',
+  'IDEA_EVAL',
+  'BUILD_SPEC',
+  'CODE',
+  'CODE_EVAL',
+  'WRITE',
+  'WRITE_EVAL',
+  'EXTRACT',
 ];
-
+const STEPS = STEP_DEFS.map(id => ({ id, label: t('step.' + id) }));
 const STEP_IDS = STEPS.map(s => s.id);
 
 // ── App State ─────────────────────────────────────────────────────────────────
@@ -50,7 +50,7 @@ function buildStepBar() {
     const chip = document.createElement('button');
     chip.className = 'step-chip';
     chip.dataset.stepId = step.id;
-    chip.title = `${step.id}\nClick = set stop after\nCtrl+click = set start at`;
+    chip.title = t('step.tooltip', { id: step.id });
 
     const labelSpan = document.createElement('span');
     labelSpan.textContent = step.label;
@@ -85,7 +85,7 @@ function buildStepSelects() {
     STEPS.forEach(step => {
       const opt = document.createElement('option');
       opt.value = step.id;
-      opt.textContent = step.id;
+      opt.textContent = step.label;
       sel.appendChild(opt);
     });
   });
@@ -388,7 +388,7 @@ btnAutoScroll.addEventListener('click', () => {
 // ── Clear log ─────────────────────────────────────────────────────────────────
 $('btn-clear-log').addEventListener('click', () => {
   logPane.innerHTML = '';
-  appendLog('(log cleared)', 'log-empty');
+  appendLog(t('log.cleared'), 'log-empty');
 });
 
 // ── Reset config ──────────────────────────────────────────────────────────────
@@ -399,20 +399,20 @@ const runsModal   = $('runs-modal');
 const runsList    = $('runs-list');
 
 $('btn-load-runs').addEventListener('click', async () => {
-  runsList.innerHTML = '<p style="padding:12px;color:var(--text-muted)">Loading...</p>';
+  runsList.innerHTML = '<p style="padding:12px;color:var(--text-muted)">' + t('modal.loading') + '</p>';
   runsModal.hidden = false;
   try {
     const res = await fetch('/api/runs');
     const runs = await res.json();
     runsList.innerHTML = '';
     if (!runs.length) {
-      runsList.innerHTML = '<p style="padding:12px;color:var(--text-muted)">No runs found.</p>';
+      runsList.innerHTML = '<p style="padding:12px;color:var(--text-muted)">' + t('modal.noRuns') + '</p>';
       return;
     }
     runs.forEach(name => {
       const item = document.createElement('div');
       item.className = 'run-item';
-      item.innerHTML = `<span class="run-item-name">${escHtml(name)}</span><span class="run-item-use">Use →</span>`;
+      item.innerHTML = '<span class="run-item-name">' + escHtml(name) + '</span><span class="run-item-use">' + t('modal.use') + '</span>';
       item.addEventListener('click', () => {
         if (_runsModalSelectHandler) {
           _runsModalSelectHandler(name);
@@ -424,7 +424,7 @@ $('btn-load-runs').addEventListener('click', async () => {
       runsList.appendChild(item);
     });
   } catch {
-    runsList.innerHTML = '<p style="padding:12px;color:var(--danger)">Failed to load runs.</p>';
+    runsList.innerHTML = '<p style="padding:12px;color:var(--danger)">' + t('modal.failedLoad') + '</p>';
   }
 });
 
@@ -443,8 +443,8 @@ async function startRun() {
   const runId    = runIdInput.value.trim() || null;
 
   setRunning(true);
-  appendLog(`Starting run: ${state.startAt} → ${state.stopAfter}  max_steps=${maxSteps}`, 'pipeline');
-  if (runId) appendLog(`run_id: ${runId}`, 'pipeline');
+  appendLog(t('run.starting', { startAt: state.startAt, stopAfter: state.stopAfter, maxSteps: String(maxSteps) }), 'pipeline');
+  if (runId) appendLog('run_id: ' + runId, 'pipeline');
 
   try {
     const res = await fetch('/api/run', {
@@ -460,7 +460,7 @@ async function startRun() {
     });
     if (!res.ok) {
       const err = await res.text();
-      appendLog(`[ERROR] ${err}`, 'error');
+      appendLog('[ERROR] ' + err, 'error');
       setRunning(false);
       return;
     }
@@ -468,7 +468,7 @@ async function startRun() {
     state.jobId = job_id;
     streamLogs(job_id);
   } catch (e) {
-    appendLog(`[ERROR] ${e.message}`, 'error');
+    appendLog('[ERROR] ' + e.message, 'error');
     setRunning(false);
   }
 }
@@ -476,9 +476,9 @@ async function startRun() {
 async function cancelRun() {
   if (!state.jobId) return;
   try {
-    await fetch(`/api/jobs/${state.jobId}/cancel`, { method: 'POST' });
+    await fetch('/api/jobs/' + state.jobId + '/cancel', { method: 'POST' });
   } catch {}
-  appendLog('[CANCELLED] Run cancelled by user.', 'warn');
+  appendLog(t('log.cancelled'), 'warn');
   setRunning(false);
 }
 
@@ -487,7 +487,7 @@ function streamLogs(jobId) {
   const MAX_RETRIES = 5;
 
   function connect() {
-    const es = new EventSource(`/api/stream/${jobId}`);
+    const es = new EventSource('/api/stream/' + jobId);
 
     es.addEventListener('message', e => {
       retries = 0; // reset on successful message
@@ -495,9 +495,9 @@ function streamLogs(jobId) {
       if (data.startsWith('[DONE:')) {
         const [, status] = data.match(/\[DONE:(\w+):/) || [];
         const cls = status === 'done' ? 'done' : 'error';
-        appendLog(`[${status?.toUpperCase() || 'FINISHED'}] Run complete.`, cls);
-        setRunStatus(status === 'done' ? 'success' : 'error',
-          status === 'done' ? '✓ Run completed.' : '✗ Run ended with errors.');
+        const label = status === 'done' ? t('run.status.done') : t('run.status.error');
+        appendLog('[FINISHED] ' + label, cls);
+        setRunStatus(status === 'done' ? 'success' : 'error', label);
         setRunning(false);
         state.currentStep = null;
         updateStepHighlights();
@@ -523,10 +523,10 @@ function streamLogs(jobId) {
       es.close();
       retries++;
       if (retries <= MAX_RETRIES) {
-        appendLog(`[WARN] SSE connection lost, reconnecting… (${retries}/${MAX_RETRIES})`, 'warn');
+        appendLog(t('log.sseLost') + ' (' + retries + '/' + MAX_RETRIES + ')', 'warn');
         setTimeout(connect, 2000);
       } else {
-        appendLog('[ERROR] SSE connection lost after max retries. Backend may still be running.', 'error');
+        appendLog(t('log.sseFailed'), 'error');
         setRunning(false);
       }
     };
@@ -550,7 +550,7 @@ function appendLog(text, extraClass = '') {
   if (placeholder) placeholder.remove();
 
   const div = document.createElement('div');
-  div.className = `log-line ${extraClass}`.trim();
+  div.className = ('log-line ' + extraClass).trim();
   div.textContent = text;
   logPane.appendChild(div);
   if (state.autoScroll) {
@@ -563,14 +563,14 @@ function setRunning(isRunning) {
   btnRun.disabled    = isRunning;
   btnCancel.disabled = !isRunning;
   if (!isRunning) state.jobId = null;
-  if (isRunning) setRunStatus('running', '⟳ Running…');
+  if (isRunning) setRunStatus('running', t('run.status.running'));
   const indicator = $('log-indicator');
   if (indicator) indicator.classList.toggle('active', isRunning);
 }
 
 function setRunStatus(type, msg) {
-  runStatus.className = `run-status ${type}`;
-  runStatus.innerHTML = `<span class="status-dot"></span>${msg}`;
+  runStatus.className = 'run-status ' + type;
+  runStatus.innerHTML = '<span class="status-dot"></span>' + msg;
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
@@ -587,13 +587,13 @@ document.querySelectorAll('.run-tab').forEach(tab => {
     document.querySelectorAll('.run-tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
-    $(`tab-${tab.dataset.tab}`).classList.add('active');
+    $('tab-' + tab.dataset.tab).classList.add('active');
   });
 });
 
 function switchTab(name) {
   document.querySelectorAll('.run-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === `tab-${name}`));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
 }
 
 // ── Results: File Tree ────────────────────────────────────────────────────────
@@ -617,11 +617,11 @@ async function loadResultsForRun(runId) {
   _resultsRunId = runId;
   $('results-run-label').textContent = runId;
   const body = $('file-tree-body');
-  body.innerHTML = '<div class="file-tree-empty">Loading…</div>';
+  body.innerHTML = '<div class="file-tree-empty">' + t('results.loading') + '</div>';
   switchTab('results');
 
   try {
-    const res = await fetch(`/api/runs/${encodeURIComponent(runId)}/files`);
+    const res = await fetch('/api/runs/' + encodeURIComponent(runId) + '/files');
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     body.innerHTML = '';
@@ -630,7 +630,7 @@ async function loadResultsForRun(runId) {
     const pdfNode = body.querySelector('[data-rel="paper_gene/main.pdf"]');
     if (pdfNode) pdfNode.click();
   } catch (e) {
-    body.innerHTML = `<div class="file-tree-empty" style="color:var(--danger)">${escHtml(e.message)}</div>`;
+    body.innerHTML = '<div class="file-tree-empty" style="color:var(--danger)">' + escHtml(e.message) + '</div>';
   }
 }
 
@@ -639,11 +639,11 @@ function renderTree(items, container, depth) {
     if (item.type === 'dir') {
       const row = document.createElement('div');
       row.className = 'tree-dir-row';
-      row.style.paddingLeft = `${10 + depth * 14}px`;
+      row.style.paddingLeft = (10 + depth * 14) + 'px';
       const toggle = document.createElement('span');
       toggle.className = 'tree-toggle';
       toggle.textContent = '▶';
-      row.innerHTML = `<span class="tree-icon">📁</span><span class="tree-name">${escHtml(item.name)}</span>`;
+      row.innerHTML = '<span class="tree-icon">📁</span><span class="tree-name">' + escHtml(item.name) + '</span>';
       row.prepend(toggle);
 
       const children = document.createElement('div');
@@ -665,11 +665,11 @@ function renderTree(items, container, depth) {
       const el = document.createElement('div');
       el.className = 'tree-file' + (item.highlight ? ' highlight' : '');
       el.dataset.rel = item.rel;
-      el.style.paddingLeft = `${10 + depth * 14}px`;
-      el.innerHTML = `
-        <span class="tree-icon">${fileIcon(item.ext)}</span>
-        <span class="tree-name">${escHtml(item.name)}</span>
-        <span class="tree-size">${fmtSize(item.size)}</span>`;
+      el.style.paddingLeft = (10 + depth * 14) + 'px';
+      el.innerHTML =
+        '<span class="tree-icon">' + fileIcon(item.ext) + '</span>' +
+        '<span class="tree-name">' + escHtml(item.name) + '</span>' +
+        '<span class="tree-size">' + fmtSize(item.size) + '</span>';
       el.addEventListener('click', () => {
         document.querySelectorAll('.tree-file.active').forEach(f => f.classList.remove('active'));
         el.classList.add('active');
@@ -690,37 +690,37 @@ function fileIcon(ext) {
   return '📄';
 }
 function fmtSize(b) {
-  if (b < 1024) return `${b}B`;
-  if (b < 1024 * 1024) return `${(b/1024).toFixed(0)}K`;
-  return `${(b/1024/1024).toFixed(1)}M`;
+  if (b < 1024) return b + 'B';
+  if (b < 1024 * 1024) return (b/1024).toFixed(0) + 'K';
+  return (b/1024/1024).toFixed(1) + 'M';
 }
 
 // ── Preview ───────────────────────────────────────────────────────────────────
 async function previewFile(runId, rel, name, ext) {
   const panel = $('preview-panel');
-  const url   = `/api/runs/${encodeURIComponent(runId)}/file?path=${encodeURIComponent(rel)}`;
+  const url   = '/api/runs/' + encodeURIComponent(runId) + '/file?path=' + encodeURIComponent(rel);
 
   if (ext === '.pdf') {
-    panel.innerHTML = `
-      <div class="preview-header">
-        <span class="preview-filename">${escHtml(name)}</span>
-        <a class="btn btn-ghost btn-sm preview-download" href="${url}" target="_blank">↗ Open</a>
-      </div>
-      <div class="preview-content">
-        <embed src="${url}" type="application/pdf" />
-      </div>`;
+    panel.innerHTML =
+      '<div class="preview-header">' +
+        '<span class="preview-filename">' + escHtml(name) + '</span>' +
+        '<a class="btn btn-ghost btn-sm preview-download" href="' + url + '" target="_blank">' + t('file.previewOpen') + '</a>' +
+      '</div>' +
+      '<div class="preview-content">' +
+        '<embed src="' + url + '" type="application/pdf" />' +
+      '</div>';
     return;
   }
 
   // text-based files
-  panel.innerHTML = `
-    <div class="preview-header">
-      <span class="preview-filename">${escHtml(name)}</span>
-      <a class="btn btn-ghost btn-sm preview-download" href="${url}" target="_blank" download>↓ Download</a>
-    </div>
-    <div class="preview-content" id="preview-content-body">
-      <pre class="${ext === '.json' || ext === '.jsonl' ? 'preview-json' : 'preview-code'}">Loading…</pre>
-    </div>`;
+  panel.innerHTML =
+    '<div class="preview-header">' +
+      '<span class="preview-filename">' + escHtml(name) + '</span>' +
+      '<a class="btn btn-ghost btn-sm preview-download" href="' + url + '" target="_blank" download>' + t('file.previewDownload') + '</a>' +
+    '</div>' +
+    '<div class="preview-content" id="preview-content-body">' +
+      '<pre class="' + (ext === '.json' || ext === '.jsonl' ? 'preview-json' : 'preview-code') + '">' + t('file.previewLoading') + '</pre>' +
+    '</div>';
 
   try {
     const res  = await fetch(url);
@@ -733,7 +733,7 @@ async function previewFile(runId, rel, name, ext) {
       pre.textContent = text;
     }
   } catch (e) {
-    panel.querySelector('pre').textContent = `Error loading file: ${e.message}`;
+    panel.querySelector('pre').textContent = t('file.previewError', { message: e.message });
   }
 }
 
@@ -763,7 +763,7 @@ $('btn-dir-select').addEventListener('click', () => {
 
 async function openDirBrowser(path) {
   dirModal.hidden = false;
-  dirList.innerHTML = '<div class="dir-empty">Loading…</div>';
+  dirList.innerHTML = '<div class="dir-empty">' + t('results.loading') + '</div>';
   try {
     const url = '/api/browse' + (path ? '?path=' + encodeURIComponent(path) : '');
     const res  = await fetch(url);
@@ -776,29 +776,71 @@ async function openDirBrowser(path) {
 
     dirList.innerHTML = '';
     if (!data.entries.length) {
-      dirList.innerHTML = '<div class="dir-empty">No subdirectories found.</div>';
+      dirList.innerHTML = '<div class="dir-empty">' + t('modal.noDirs') + '</div>';
       return;
     }
     data.entries.forEach(entry => {
       const item = document.createElement('div');
       item.className = 'dir-item';
-      item.innerHTML = `<span class="dir-item-icon">📁</span><span class="dir-item-name">${escHtml(entry.name)}</span>`;
+      item.innerHTML = '<span class="dir-item-icon">📁</span><span class="dir-item-name">' + escHtml(entry.name) + '</span>';
       item.title = entry.path;
       item.addEventListener('click', () => openDirBrowser(entry.path));
       dirList.appendChild(item);
     });
   } catch (e) {
-    dirList.innerHTML = `<div class="dir-empty" style="color:var(--danger)">${escHtml(e.message)}</div>`;
+    dirList.innerHTML = '<div class="dir-empty" style="color:var(--danger)">' + escHtml(e.message) + '</div>';
   }
+}
+
+// ── Language toggle ───────────────────────────────────────────────────────────
+$('btn-lang').addEventListener('click', () => {
+  const next = getLang() === 'zh' ? 'en' : 'zh';
+  setLang(next);
+});
+
+// ── Apply i18n to HTML elements with data-i18n attribute ──────────────────────
+function applyI18nToDOM() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (!key) return;
+    el.textContent = t(key);
+  });
+  // Update document title
+  document.title = t('title');
+  // Update html lang attr
+  document.documentElement.lang = getLang();
+  // Update step bar label
+  const stepLabel = $('step-bar-label-text');
+  if (stepLabel) stepLabel.textContent = t('step.barLabel');
+  // Update hint
+  const hintEl = document.querySelector('.step-hint');
+  if (hintEl) hintEl.innerHTML = t('step.hint').replace(/·/g, '&nbsp;·&nbsp;');
+  // Update "Start at" / "Stop after"
+  const startLabel = selStartAt?.previousElementSibling;
+  if (startLabel) startLabel.textContent = t('step.startAt');
+  const stopLabel = selStopAfter?.previousElementSibling;
+  if (stopLabel) stopLabel.textContent = t('step.stopAfter');
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 (function init() {
+  applyI18nToDOM();
   buildStepBar();
   buildStepSelects();
   updateStepHighlights();
   loadDefaultConfig();
 
+  // Also update button text that has icon + text
+  updateButtonLabels();
+
   // placeholder log
-  appendLog('Ready. Configure and press ▶ Start Run.', 'log-empty');
+  appendLog(t('run.status.ready'), 'log-empty');
 })();
+
+function updateButtonLabels() {
+  // "▶ Start Run" / "■ Cancel" buttons need text+icon preserved
+  const btnRunSpan = btnRun.querySelector('span');
+  if (btnRunSpan) btnRunSpan.textContent = _lang === 'zh' ? '开始运行' : 'Start Run';
+  const btnCancelSpan = btnCancel.querySelector('span');
+  if (btnCancelSpan) btnCancelSpan.textContent = _lang === 'zh' ? '取消' : 'Cancel';
+}
