@@ -17,7 +17,7 @@
   中文 | <a href="README.md">English</a>
 </p>
 
-### 🎉 NEWS: 2026.06 - 我们的论文已被 [ICML AI4Research Workshop](https://ai4research-icml-workshop.github.io/) 接收。[[Paper](CameraReady.pdf)]
+#### 🎉 NEWS: 2026.06 - 我们的论文已被 [ICML AI4Research Workshop](https://ai4research-icml-workshop.github.io/) 接收。[[Paper](CameraReady.pdf)]
 
 ---
 
