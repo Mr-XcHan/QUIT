@@ -17,6 +17,8 @@
   中文 | <a href="README.md">English</a>
 </p>
 
+### 🎉 NEWS: 2026.06 - 我们的论文已被 [ICML AI4Research Workshop](https://ai4research-icml-workshop.github.io/) 接收。[[Paper](CameraReady.pdf)]
+
 ---
 
 QUIT 是一个人机协同的科研助手——并不是将整个科研流程当作黑盒，而是一条透明的流水线，研究者在每个环节都保持完全的控制权。
@@ -210,6 +212,23 @@ QUIT Agent 在不同研究领域端到端生成的论文：
 全自动运行的结果我们很欢迎，但我们尤其期待**人机协同的成果**——研究者主动介入引导 Agent、编辑中间制品或调整方向的论文。这类成果往往是最有趣的结果。
 
 如果你希望将自己的输出展示在这里，欢迎提 issue 或 Pull Request。🙌
+
+---
+
+## 📚 引用
+
+如果使用 QUIT，请引用：
+
+```bibtex
+@inproceedings{
+han2026quit,
+title={{QUIT}: A Human-in-the-Loop Platform for {AI} Research Automation},
+author={Xinchen Han},
+booktitle={ICML 2026 Workshop: AI as a Tool for Mathematics, Computer Science, and Machine Learning},
+year={2026},
+url={https://openreview.net/forum?id=U9eHQipL6M}
+}
+```
 
 ---
 

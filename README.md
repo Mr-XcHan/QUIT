@@ -17,6 +17,8 @@
   <a href="README.zh.md">中文</a> | English
 </p>
 
+### 🎉 NEWS: 2026.06 - Our paper has been accepted by the [ICML AI4Research Workshop](https://ai4research-icml-workshop.github.io/). [[Paper](CameraReady.pdf)]
+
 ---
 
 QUIT is a human-in-the-loop research assistant — not a black box, but a transparent pipeline where researchers remain in full control at every step.
@@ -210,6 +212,23 @@ Papers produced end-to-end by QUIT Agent across different research domains:
 Full auto-run results are welcome, but we're especially excited to feature **human-in-the-loop works** — papers where researchers stepped in to guide the agent, edit intermediate artifacts, or steer the direction. Those tend to be the most interesting results.
 
 If you'd like your output showcased here, feel free to open an issue or pull request. 🙌
+
+---
+
+## 📚 Citation
+
+If you use QUIT, please cite:
+
+```bibtex
+@inproceedings{
+han2026quit,
+title={{QUIT}: A Human-in-the-Loop Platform for {AI} Research Automation},
+author={Xinchen Han},
+booktitle={ICML 2026 Workshop: AI as a Tool for Mathematics, Computer Science, and Machine Learning},
+year={2026},
+url={https://openreview.net/forum?id=U9eHQipL6M}
+}
+```
 
 ---
 
